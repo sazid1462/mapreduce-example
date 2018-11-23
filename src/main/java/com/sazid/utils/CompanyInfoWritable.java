@@ -1,13 +1,11 @@
 package com.sazid.utils;
 
-import com.sun.istack.NotNull;;
+import com.sun.istack.NotNull;
 import org.apache.hadoop.io.SortedMapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-
-import java.util.StringTokenizer;
 
 import static com.sazid.mapreduce.Main.accountFieldKey;
 import static com.sazid.mapreduce.Main.typeFieldKey;

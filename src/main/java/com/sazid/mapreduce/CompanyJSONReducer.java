@@ -3,7 +3,6 @@ package com.sazid.mapreduce;
 import com.sazid.utils.CompanyInfoArrayWritable;
 import com.sazid.utils.CompanyInfoWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;

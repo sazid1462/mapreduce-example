@@ -1,18 +1,14 @@
 package com.sazid.mapreduce;
 
 import com.sazid.utils.CompanyInfoWritable;
-import com.sazid.utils.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,14 +17,12 @@ import java.net.URISyntaxException;
 public class Main {
     public static final Text accountFieldKey = new Text("accounts");
     public static final Text typeFieldKey = new Text("type");
-    public static final Text orgNoFieldKey = new Text("orgno");
+    static final Text orgNoFieldKey = new Text("orgno");
 
     /**
      *
      * @param args args respectively company.csv, accounts.csv, output
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @throws InterruptedException
+     * @throws IOException, ClassNotFoundException, InterruptedException, URISyntaxException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException, URISyntaxException {
         Configuration conf = new Configuration();

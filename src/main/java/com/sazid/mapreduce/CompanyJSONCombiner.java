@@ -26,7 +26,7 @@ public class CompanyJSONCombiner extends Reducer<Text, CompanyInfoWritable, Text
                 if (company == null) {
                     company = val;
                 } else {
-                    CompanyJSONCombiner.addAccountsInfoToCompanyInfo(company, (CompanyInfoWritable[]) ((CompanyInfoArrayWritable)val.get(accountFieldKey)).get());
+                    CompanyJSONCombiner.addAccountsInfoToCompanyInfo(company, ((CompanyInfoArrayWritable)val.get(accountFieldKey)).get());
                 }
             }
         }

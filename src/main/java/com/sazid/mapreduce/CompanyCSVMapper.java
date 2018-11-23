@@ -11,7 +11,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.StringTokenizer;
 
 import static com.sazid.mapreduce.Main.typeFieldKey;
 
