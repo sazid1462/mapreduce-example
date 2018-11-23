@@ -19,6 +19,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Main {
+    public static final Text accountFieldKey = new Text("accounts");
+    public static final Text typeFieldKey = new Text("type");
+    public static final Text orgNoFieldKey = new Text("orgno");
+
     /**
      *
      * @param args args respectively company.csv, accounts.csv, output
