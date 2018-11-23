@@ -2,8 +2,10 @@ package com.sazid.mapreduce;
 
 import com.sazid.utils.CompanyInfoArrayWritable;
 import com.sazid.utils.CompanyInfoWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +13,16 @@ import java.util.ArrayList;
 import static com.sazid.mapreduce.Main.accountFieldKey;
 import static com.sazid.mapreduce.Main.typeFieldKey;
 
-public class CompanyJSONReducer extends Reducer<Text, CompanyInfoWritable, Text, Text> {
+public class CompanyJSONReducer extends Reducer<Text, CompanyInfoWritable, NullWritable, Text> {
+    private MultipleOutputs multipleOutputs;
+
+    @Override
+    protected void setup(Context context) throws IOException,
+            InterruptedException {
+        multipleOutputs = new MultipleOutputs(context);
+
+    }
+
     public void reduce(Text key, Iterable<CompanyInfoWritable> values, Context context) throws IOException, InterruptedException {
         CompanyInfoWritable company = null;
         ArrayList<CompanyInfoWritable> accounts = new ArrayList<>();
@@ -34,6 +45,12 @@ public class CompanyJSONReducer extends Reducer<Text, CompanyInfoWritable, Text,
             accountsArr = accounts.toArray(accountsArr);
             CompanyJSONCombiner.addAccountsInfoToCompanyInfo(company, accountsArr);
         }
-        context.write(key, new Text(company.toString()));
+        multipleOutputs.write(NullWritable.get(), new Text(company.toString()), key.toString()+"__dir/"+key.toString());
+    }
+
+    @Override
+    protected void cleanup(Context context) throws IOException,
+            InterruptedException {
+        multipleOutputs.close();
     }
 }

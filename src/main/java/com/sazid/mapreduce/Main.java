@@ -1,31 +1,36 @@
 package com.sazid.mapreduce;
 
 import com.sazid.utils.CompanyInfoWritable;
+import com.sazid.utils.FileMerger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class Main {
     public static final Text accountFieldKey = new Text("accounts");
     public static final Text typeFieldKey = new Text("type");
     static final Text orgNoFieldKey = new Text("orgno");
-
+    private static Configuration conf;
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
     /**
      *
      * @param args args respectively company.csv, accounts.csv, output
      * @throws IOException, ClassNotFoundException, InterruptedException, URISyntaxException
      */
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException, URISyntaxException {
-        Configuration conf = new Configuration();
+    public static void main(String[] args) throws Exception {
+        conf = new Configuration();
 
         Job job = Job.getInstance(conf, "company csv to json");
 
@@ -46,6 +51,16 @@ public class Main {
         MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, AccountsCSVMapper.class);
         FileOutputFormat.setOutputPath(job, new Path(args[2]));
 
+        job.waitForCompletion(true);
+//        getMergeInHdfs(args[2], args[2]);
+        RemoteIterator<LocatedFileStatus> fileList = fs.listFiles(outputPath, true);
+        while (fileList.hasNext()) {
+            Path inp = fileList.next().getPath().getParent();
+            if (!inp.toString().endsWith("__dir")) continue;
+            FileMerger.merge(inp.toString(),
+                    args[2]+"/"+inp.getName().replace("__dir", ".json"),
+                    0, true, true);
+        }
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }
