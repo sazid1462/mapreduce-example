@@ -30,3 +30,4 @@ Make separate folders for companies CSV files and accounts CSV files. ***Beware,
     - arg0 : Folder path of the companies CSV files
     - arg1 : Folder path of the accounts CSV files
     - arg2 : Folder path of the output
+    - arg3 : (Optional) Number of mappers (default to 0 and hence local merge mode, set to positive value to enable cluster merge mode)

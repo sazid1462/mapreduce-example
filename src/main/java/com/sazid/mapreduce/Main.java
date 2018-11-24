@@ -60,14 +60,28 @@ public class Main {
         // Wait for the job to finish.
         job.waitForCompletion(true);
 
+        // Try parsing the mapperTasks count from args. If unable use default value 0, which means local environment.
+        int mapperTasks = 0;
+        if (args.length > 3) {
+            try {
+                mapperTasks = Integer.parseInt(args[3]);
+                mapperTasks = Math.max(mapperTasks, 0);
+                logger.info("Number of mapper tasks for merging " + mapperTasks);
+            } catch (Exception e) {
+                logger.warn("Mapper Tasks value parsing error.", e);
+            }
+        } else {
+            logger.info("Mapper Tasks value is not given. Using default value 0");
+        }
+
         // Merge the part files to single .json file for each company
         RemoteIterator<LocatedFileStatus> fileList = fs.listFiles(outputPath, true);
         while (fileList.hasNext()) {
             Path inp = fileList.next().getPath().getParent();
-            if (!inp.toString().endsWith("__dir")) continue;
+            if (!inp.toString().endsWith("__dir") || inp.equals(outputPath)) continue;
             FileMerger.merge(inp.toString(),
                     args[2]+"/"+inp.getName().replace("__dir", ".json"),
-                    0, true, true);
+                    mapperTasks, true, true);
         }
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
