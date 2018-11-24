@@ -29,6 +29,11 @@ import org.apache.log4j.Logger;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * This is helper class to merge the mapreduce part files to a single one. It is collected from
+ * http://www.javased.com/index.php?source_dir=Cloud9/src/dist/edu/umd/cloud9/io/FileMerger.java
+ * For our purpose I have just modified the code a small bit.
+ */
 public class FileMerger extends Configured {
     private static final Logger sLogger = Logger.getLogger(FileMerger.class);
 

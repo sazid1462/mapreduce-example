@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.sazid.mapreduce.Main.accountFieldKey;
+import static com.sazid.mapreduce.Main.orgNoFieldKey;
 import static com.sazid.mapreduce.Main.typeFieldKey;
 
 /**
@@ -18,28 +19,20 @@ import static com.sazid.mapreduce.Main.typeFieldKey;
  * this combiner will create a combined CompanyInfoWritable object with additional 'accounts' field.
  */
 public class CompanyJSONCombiner extends Reducer<Text, CompanyInfoWritable, Text, CompanyInfoWritable> {
+    /**
+     * @param key is the org_number
+     * @param values are the company and accounts info
+     * @param context reducer context
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void reduce(Text key, Iterable<CompanyInfoWritable> values, Context context) throws IOException, InterruptedException {
         CompanyInfoWritable company = null;
         ArrayList<CompanyInfoWritable> accounts = new ArrayList<>();
-        for (CompanyInfoWritable val : values) {
-            // Handle 'accounts' and 'company' values differently
-            if (val.containsKey(typeFieldKey) && val.get(typeFieldKey).toString().equals("accounts")) {
-                // remove the org_number/orgno field from the accounts objects as they will be reside within the company object as an array.
-//                val.remove(orgNoFieldKey);
-                // add the accounts info in the array
-                accounts.add(new CompanyInfoWritable(val));
-            } else {
-                if (company == null) {
-                    // If no company info is found already consider the first one as the final combined object
-                    company = new CompanyInfoWritable(val);
-                } else {
-                    // If there are multiple such objects then just concatenate the accounts array together
-                    CompanyJSONCombiner.addAccountsInfoToCompanyInfo(company, ((CompanyInfoArrayWritable)val.get(accountFieldKey)).get());
-                }
-            }
-        }
+        company = CompanyJSONReducer.combineValuesToObject(values, null, accounts);
         if (company == null) company = new CompanyInfoWritable();
         company.put(typeFieldKey, new Text("company"));
+        // If there are accounts info for the company add them to companyInfo
         if (!accounts.isEmpty()) {
             CompanyInfoWritable[] accountsArr = new CompanyInfoWritable[accounts.size()];
             accountsArr = accounts.toArray(accountsArr);
@@ -49,6 +42,7 @@ public class CompanyJSONCombiner extends Reducer<Text, CompanyInfoWritable, Text
     }
 
     static void addAccountsInfoToCompanyInfo(CompanyInfoWritable company, Writable[] accountsArr) {
+        // Add accounts info to the company object under a new property 'accounts'. If there is already exists the accounts info then merge the new value with older.
         if (company.containsKey(accountFieldKey)) {
             CompanyInfoArrayWritable tmp = (CompanyInfoArrayWritable) company.get(accountFieldKey);
             Writable[] oldAccountsArr = tmp.get();

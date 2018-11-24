@@ -18,12 +18,17 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 
+/**
+ * Main driver class of hadoop mapreduce job
+ */
 public class Main {
+    // Define some constants to be used across the whole project
     public static final Text accountFieldKey = new Text("accounts");
     public static final Text typeFieldKey = new Text("type");
     static final Text orgNoFieldKey = new Text("orgno");
     private static Configuration conf;
     private static Logger logger = LoggerFactory.getLogger(Main.class);
+
     /**
      *
      * @param args args respectively company.csv, accounts.csv, output
@@ -39,20 +44,23 @@ public class Main {
         //It will delete the output directory if it already exists. don't need to delete it  manually
         fs.delete(outputPath, true);
 
+        // Configure the job
         job.setJarByClass(Main.class);
-//        job.setMapperClass(CompanyCSVMapper.class);
         job.setCombinerClass(CompanyJSONCombiner.class);
         job.setReducerClass(CompanyJSONReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(CompanyInfoWritable.class);
-//        job.setInputFormatClass(FileInputFormat.class);
-//        FileInputFormat.addInputPath(job, new Path(args[0]));
+
+        // Register two inputs and mapper classes for company and accounts CSV inputs
         MultipleInputs.addInputPath(job, new Path(args[0]), TextInputFormat.class, CompanyCSVMapper.class);
         MultipleInputs.addInputPath(job, new Path(args[1]), TextInputFormat.class, AccountsCSVMapper.class);
+        // Set the output path
         FileOutputFormat.setOutputPath(job, new Path(args[2]));
 
+        // Wait for the job to finish.
         job.waitForCompletion(true);
-//        getMergeInHdfs(args[2], args[2]);
+
+        // Merge the part files to single .json file for each company
         RemoteIterator<LocatedFileStatus> fileList = fs.listFiles(outputPath, true);
         while (fileList.hasNext()) {
             Path inp = fileList.next().getPath().getParent();

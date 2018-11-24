@@ -17,6 +17,13 @@ import static com.sazid.mapreduce.Main.typeFieldKey;
  * Mapper class for accounts CSV files. It will map all the accounts info of the same company under same key.
  */
 public class AccountsCSVMapper extends Mapper<LongWritable, Text, Text, CompanyInfoWritable> {
+    /**
+     * @param key is the position in the input file
+     * @param value is the line of text from the input file at the key position
+     * @param context mapper context
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException{
         // handle header row and normal row differently
         if (key.get() > 0) {

@@ -3,6 +3,10 @@ package com.sazid.utils;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * Simple configuration class. This can load the *.properties file. It is implemented as singleton so that it can be
+ * used in whole project with same configuration.
+ */
 public class Config {
     private static Config instance;
     private Properties config;

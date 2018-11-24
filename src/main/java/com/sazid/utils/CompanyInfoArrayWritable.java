@@ -6,6 +6,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 
 public class CompanyInfoArrayWritable extends ArrayWritable {
+    // This default constructor is necessary to be defined. Or there will be errors.
     public CompanyInfoArrayWritable() {
         super(CompanyInfoWritable.class);
     }
@@ -32,6 +33,10 @@ public class CompanyInfoArrayWritable extends ArrayWritable {
         return jsonArr;
     }
 
+    /**
+     * toString method is override to produce JSON string
+     * @return JSON string representation of the object
+     */
     @Override
     public String toString() {
         try {

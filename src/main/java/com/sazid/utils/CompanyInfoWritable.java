@@ -15,15 +15,21 @@ public class CompanyInfoWritable extends SortedMapWritable implements WritableCo
         super();
     }
 
+    // This constructor is important. It will allow us to create the copy of an existing object
     public CompanyInfoWritable(CompanyInfoWritable infoWritable) {
         super(infoWritable);
     }
 
+    /**
+     * @return complex json object representing the {@link CompanyInfoWritable} object
+     * @throws JSONException
+     */
     public JSONObject toJsonObject() throws JSONException {
         JSONObject jsonObj = new JSONObject();
         Config config = Config.getConfig();
         String type = get(typeFieldKey).toString();
         String[] headers;
+        // get the corresponding headers from the config
         if (type.equals("accounts")) {
             headers = config.get("accounts.column.headers").toString().split(",");
         } else {
@@ -35,16 +41,17 @@ public class CompanyInfoWritable extends SortedMapWritable implements WritableCo
             keyStr = keyStr.equals("org_number") ? "orgno" : keyStr;
             key = keyStr.equals("orgno") ? new Text("orgno") : key;
             switch (keyStr) {
-                case "type":
+                case "type": // skip the type field in JSON format
                     break;
                 default:
-                    if (!containsKey(key)) break;
+                    if (!containsKey(key)) break; // if the object don't have a field then skip
                     var val = get(key).toString();
-                    if (val.equals("")) continue;
+                    if (val.equals("")) continue; // skip the empty property
                     jsonObj.put(keyStr, val);
                     break;
             }
         }
+        // If there are accounts, convert them to a JSONArray in the JSONObject.
         if (containsKey(accountFieldKey)) {
             CompanyInfoArrayWritable arr = (CompanyInfoArrayWritable) get(accountFieldKey);
             var jsonArr = arr.toJsonArray();
@@ -56,6 +63,10 @@ public class CompanyInfoWritable extends SortedMapWritable implements WritableCo
         return jsonObj;
     }
 
+    /**
+     * toString method is override to produce JSON string
+     * @return JSON string representation of the object
+     */
     @Override
     public String toString() {
         // Convert to JSON and then write to a String - ensures JSON read-in compatibility
