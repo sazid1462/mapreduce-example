@@ -25,7 +25,7 @@ To build shadow/large jar to run in hadoop cluster
     ./gradlew idea
 
 #### Program Arguments
-Make separate folders for companies CSV files and accounts CSV files.
+Make separate folders for companies CSV files and accounts CSV files. ***Beware, the output folder will be deleted if already exists.***
 
     - arg0 : Folder path of the companies CSV files
     - arg1 : Folder path of the accounts CSV files
