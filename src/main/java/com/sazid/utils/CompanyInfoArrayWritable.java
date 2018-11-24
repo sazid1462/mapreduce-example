@@ -34,13 +34,12 @@ public class CompanyInfoArrayWritable extends ArrayWritable {
 
     @Override
     public String toString() {
-        JSONArray jsonArr = null;
         try {
-            jsonArr = toJsonArray();
+            JSONArray jsonArr = toJsonArray();
             return jsonArr.toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return "";
     }
 }

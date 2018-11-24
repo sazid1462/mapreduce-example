@@ -1,6 +1,5 @@
 package com.sazid.utils;
 
-import com.sun.istack.NotNull;
 import org.apache.hadoop.io.SortedMapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
@@ -12,10 +11,12 @@ import static com.sazid.mapreduce.Main.typeFieldKey;
 
 public class CompanyInfoWritable extends SortedMapWritable implements WritableComparable<CompanyInfoWritable> {
 
-    @Override
-    public int compareTo(@NotNull CompanyInfoWritable o) {
-        // Implement your compare logic
-        return 0;
+    public CompanyInfoWritable() {
+        super();
+    }
+
+    public CompanyInfoWritable(CompanyInfoWritable infoWritable) {
+        super(infoWritable);
     }
 
     public JSONObject toJsonObject() throws JSONException {
@@ -32,6 +33,7 @@ public class CompanyInfoWritable extends SortedMapWritable implements WritableCo
             Text key = new Text(header.trim().toLowerCase());
             var keyStr = key.toString();
             keyStr = keyStr.equals("org_number") ? "orgno" : keyStr;
+            key = keyStr.equals("orgno") ? new Text("orgno") : key;
             switch (keyStr) {
                 case "type":
                     break;
@@ -65,5 +67,19 @@ public class CompanyInfoWritable extends SortedMapWritable implements WritableCo
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Compares this object with the specified object for order.  Returns a
+     * negative integer, zero, or a positive integer as this object is less
+     * than, equal to, or greater than the specified object.
+     *
+     * @throws NullPointerException if the specified object is null
+     * @throws ClassCastException   if the specified object's type prevents it
+     *                              from being compared to this object.
+     */
+    @Override
+    public int compareTo(CompanyInfoWritable o) {
+        return 0;
     }
 }

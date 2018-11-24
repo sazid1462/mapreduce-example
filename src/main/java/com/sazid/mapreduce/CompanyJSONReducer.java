@@ -28,10 +28,10 @@ public class CompanyJSONReducer extends Reducer<Text, CompanyInfoWritable, NullW
         ArrayList<CompanyInfoWritable> accounts = new ArrayList<>();
         for (CompanyInfoWritable val : values) {
             if (val.containsKey(typeFieldKey) && val.get(typeFieldKey).toString().equals("accounts")) {
-                accounts.add(val);
+                accounts.add(new CompanyInfoWritable(val));
             } else {
                 if (company == null) {
-                    company = val;
+                    company = new CompanyInfoWritable(val);
                 } else {
 
                     CompanyJSONCombiner.addAccountsInfoToCompanyInfo(company, ((CompanyInfoArrayWritable)val.get(accountFieldKey)).get());
